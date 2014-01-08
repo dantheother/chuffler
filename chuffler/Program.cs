@@ -2,7 +2,9 @@
 using Owin;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Timers;
@@ -51,12 +53,13 @@ namespace chuffler
 
         public ChufflerStarter()
         {
-            
+
         }
 
 
 
-        public void Start() {
+        public void Start()
+        {
             const string serverUrl = "http://localhost:8080";
             using (WebApp.Start<Startup>(serverUrl))
             {
@@ -66,7 +69,8 @@ namespace chuffler
                 }
             }
         }
-        public void Stop() {
+        public void Stop()
+        {
             lock (monitor)
             {
                 Monitor.Pulse(monitor);
@@ -86,6 +90,32 @@ namespace chuffler
 
             // Configure SignalR
             app.MapSignalR();
+
+
+            var staticFileDirectoryPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Web");
+            var baseUrl = "";
+
+            app.UseDefaultFiles(new Microsoft.Owin.StaticFiles.DefaultFilesOptions()
+            {
+                RequestPath = new Microsoft.Owin.PathString(baseUrl),
+                FileSystem = new Microsoft.Owin.FileSystems.PhysicalFileSystem(staticFileDirectoryPath)
+            });
+
+
+            app.UseStaticFiles(new Microsoft.Owin.StaticFiles.StaticFileOptions()
+            {
+                RequestPath = new Microsoft.Owin.PathString(baseUrl),
+                FileSystem = new Microsoft.Owin.FileSystems.PhysicalFileSystem(staticFileDirectoryPath)
+            });
+
+        }
+    }
+
+    public class MyHub : Microsoft.AspNet.SignalR.Hub
+    {
+        public void Send(string message)
+        {
+            Clients.All.addMessage(message);
         }
     }
 }
