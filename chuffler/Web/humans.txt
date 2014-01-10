@@ -1,0 +1,44 @@
+﻿/* TEAM */
+                            
+Your title: Dan Findley
+Site: https://github.com/dantheother
+Twitter: dantheother
+Location: Melbourne, Australia
+                 
+/* THANKS */
+/* Blog posts that helped unravel the owin/katana/topshelf/signalr/staticfile/defaultfile mess */
+
+Use OWIN to Self-Host ASP.NET Web API
+Kanchan Mehrotra
+http://www.asp.net/web-api/overview/hosting-aspnet-web-api/use-owin-to-self-host-web-api
+
+Interrupt a sleeping Thread
+Jon Skeet
+http://stackoverflow.com/a/7448607/11569
+
+Tutorial: SignalR Self-Host
+Patrick Fletcher
+http://www.asp.net/signalr/overview/signalr-20/getting-started-with-signalr-20/tutorial-signalr-20-self-host
+
+Self-host ASP.NET Web API and SignalR together
+Markus Wagner  
+http://ritzlgrmft.blogspot.com.au/2013/03/self-host-aspnet-web-api-and-signalr.html
+
+Creating a Self Hosted SignalR 2.0b Server and creating a Windows 8.1 Store Client
+Sumit Maitra
+http://www.dotnetcurry.com/showarticle.aspx?ID=918
+
+OWIN, Katana and SignalR – Breaking free from your Web Server
+Sumit Maitra
+(slightly out of date, but still a good backgrounder)
+http://www.dotnetcurry.com/showarticle.aspx?ID=915
+
+Zero friction parallel self hosting of ASP.NET Web API and static files using OWIN and Katana
+Alexander Zeitler 
+(slightly out of date)
+http://blog.alexonasp.net/post/2013/04/27/Zero-friction-parallel-self-hosting-of-ASPNET-Web-API-and-static-files-using-OWIN-and-Katana.aspx
+                 
+/* SITE */
+Last update: A long time ago
+Standards: HTML5, CSS3
+Components: jQuery, SignalR, ReactJS, Owin, Asp.net webapi, Topshelf

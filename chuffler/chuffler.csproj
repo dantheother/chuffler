@@ -111,6 +111,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Web\humans.txt" />
     <Content Include="Web\Scripts\jquery-2.0.3.intellisense.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
