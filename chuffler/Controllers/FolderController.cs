@@ -14,14 +14,31 @@ namespace chuffler.Controllers
             var folders = System.IO.Directory.GetDirectories(path);
             return folders.Select(
                 f => new System.IO.DirectoryInfo(f)
-                ).Select(
+            ).Select(
                 di => new Models.Folder
                 {
                     FullPath=di.FullName
                     , Name=di.Name
+                    , ChildCount = TryGetChildCount(di.FullName)
                 }
             );
 
         }
+
+        private int TryGetChildCount(string path)
+        {
+            try
+            {
+                return System.IO.Directory.GetDirectories(path).Length;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(string.Format("Error Getting child count for '{0}': {1} - {2}", path, ex.GetType().FullName, ex.Message));   
+            }
+
+            return 0;
+
+        }
+
     }
 }

@@ -23,6 +23,7 @@ namespace chuffler.Controllers
                     {
                         Name=di.Name
                         ,FullPath=di.Name
+                        ,ChildCount=System.IO.Directory.GetDirectories(di.Name).Length
                     }
                 }
             );

@@ -10,6 +10,6 @@ namespace chuffler.Models
     {
         public string Name { get; set; }
         public string FullPath { get; set; }
-
+        public int ChildCount { get; set; }
     }
 }

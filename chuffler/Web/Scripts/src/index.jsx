@@ -39,6 +39,11 @@ var DataApi = {
 		return new xhr({
 			url:'api/drive'
 		})
+	},
+	getFolders: function(path) {
+		return new xhr({
+			url:'api/folder?path='+path
+		})
 	}
 };
 
@@ -47,59 +52,106 @@ var Root = React.createClass({
 		var self = this;
 		DataApi.getDrives().then( function(data) {
 			var newState = self.state;
-			newState.computer.childNodes = data.map(function(drive) {
-				return {title: drive.VolumeLabel + ' (' + drive.Name + ')'}
-			});
-			self.setState(newState);
+			for (var i = 0, len = data.length; i<len; i++) {
+				var drive = data[i];
+				newState.drives.push(drive);
+				newState.directories[drive.RootFolder.FullPath] = drive.RootFolder;
+				self.setState(this);
+			}
 		});
 
 		return {
-			computer: { 
-				title:'computer',
-				childNodes:[]
-			}
+			drives: [],
+			directories: {}
 		};
 	},
+  expandDirectory: function(folder) {
+  	var self = this;
+  	folder.expanded = !folder.exapnded;
+  	if (folder.childNodes) {
+  		//allready loaded it. Set state and get out of dodge
+  		this.setState(this.state);
+  	} else {
+  		//ask the server for the kiddies
+  		DataApi.getFolders(folder.FullPath).then(function(data) {
+  			var newState = self.state;
+  			for (var i = 0, len = data.length; i<len; i++ ){
+  				var thisFolder = data[i];
+  				newState[thisFolder.FullPath] = thisFolder;
+  			}
+			folder.childNodes = data;
+			folder.expanded = true;
+			self.setState(newState);
+  		});
+  	}
+  },
   render: function() {
+  	var drives = this.state.drives.map(function(drive){
+  		return <Drive node={drive} expandDirectory={this.expandDirectory} />
+  	},this);
+
     return (
-      <TreeNode node={this.state.computer} />
+    	<div>
+    		{drives}
+    	</div>
     );
   }
 });
 
+var Drive = React.createClass({
+	handleExpand: function() {
+		if (!this.props.node.RootFolder.ChildCount) return;
+
+		this.props.expandDirectory(this.props.node.RootFolder);
+	},
+	render: function() {
+		var nodes;
+		if (this.props.node.RootFolder && this.props.node.RootFolder.childNodes) {
+			nodes = this.props.node.RootFolder.childNodes.map(function(node) {
+				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
+			},this);
+		}
+    	var style = {};
+    	if (!this.props.node.RootFolder.exapnded) {
+      		style.display = "none";
+    	}		
+		return (
+      		<div>
+        		<h5 onClick={this.handleExpand}>{this.props.node.VolumeLabel} ({this.props.node.Name})</h5>
+        		<ul style={style}>
+          			{nodes}
+       			</ul>
+      		</div>
+    	);
+	}
+})
+
 var TreeNode = React.createClass({
-  getInitialState: function() {
-    return {
-      visible: true
-    };
-  },
-  render: function() {
-    var childNodes;
-    if (this.props.node.childNodes != null) {
-      childNodes = this.props.node.childNodes.map(function(node) {
-        return <li><TreeNode node={node} /></li>
-      },this);
-    }
+	handleExpand: function() {
+		if (!this.props.node.ChildCount) return;
 
-    var style = {};
-    if (!this.state.visible) {
-      style.display = "none";
-    }
-
-    return (
-      <div>
-        <h5 onClick={this.toggle}>
-          {this.props.node.title}
-        </h5>
-        <ul style={style}>
-          {childNodes}
-        </ul>
-      </div>
-    );
-  },
-  toggle: function() {
-    this.setState({visible: !this.state.visible});
-  }
+		this.props.expandDirectory(this.props.node);
+	},
+	render: function() {
+		var nodes;
+		if (this.props.node.childNodes) {
+			nodes = this.props.childNodes.map(function(node) {
+				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
+			},this);
+		}
+    	var style = {};
+    	if (!this.props.node.exapnded) {
+      		style.display = "none";
+    	}		
+		return (
+      		<div>
+        		<h5 onClick={this.handleExpand} title={this.props.node.FullPath}>{this.props.node.Name}</h5>
+        		<ul style={style}>
+          			{nodes}
+       			</ul>
+      		</div>
+    	);
+	}	
 });
 
 React.renderComponent(
