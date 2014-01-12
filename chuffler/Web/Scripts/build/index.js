@@ -1,27 +1,68 @@
 ﻿/** @jsx React.DOM */
 
-var faketree = {
-  title: "howdy",
-  childNodes: [
-    {title: "bobby"},
-    {title: "suzie", childNodes: [
-      {title: "puppy", childNodes: [
-        {title: "dog house"}
-      ]},
-      {title: "cherry tree"}
-    ]}
-  ]
+function xhr(options) {
+  var deferred = Q.defer(),
+      req = new XMLHttpRequest();
+ 
+  req.open(options.method || 'GET', options.url, true);
+ 
+  // Set request headers if provided.
+  Object.keys(options.headers || {}).forEach(function (key) {
+    req.setRequestHeader(key, options.headers[key]);
+  });
+ 
+  req.onreadystatechange = function(e) {
+    if(req.readyState !== 4) {
+      return;
+    }
+ 
+    if([200,304].indexOf(req.status) === -1) {
+      deferred.reject(new Error('Server responded with a status of ' + req.status));
+    } else {
+    	var rawText = req.responseText;
+    	console.log(rawText);
+    	if (rawText) {
+			deferred.resolve(JSON.parse(rawText));
+    	} else {
+    		deferred.resolve();
+    	}
+    }
+  };
+ 
+  req.send(options.data || void 0);
+ 
+  return deferred.promise;
+}
+
+var DataApi = {
+	getDrives: function() {
+		return new xhr({
+			url:'api/drive'
+		})
+	}
 };
 
 var Root = React.createClass({displayName: 'Root',
 	getInitialState: function() {
+		var self = this;
+		DataApi.getDrives().then( function(data) {
+			var newState = self.state;
+			newState.computer.childNodes = data.map(function(drive) {
+				return {title: drive.VolumeLabel + ' (' + drive.Name + ')'}
+			});
+			self.setState(newState);
+		});
+
 		return {
-			tree:faketree
+			computer: { 
+				title:'computer',
+				childNodes:[]
+			}
 		};
 	},
   render: function() {
     return (
-      TreeNode( {node:this.state.tree} )
+      TreeNode( {node:this.state.computer} )
     );
   }
 });
