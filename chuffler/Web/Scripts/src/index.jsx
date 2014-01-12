@@ -67,20 +67,23 @@ var Root = React.createClass({
 	},
   expandDirectory: function(folder) {
   	var self = this;
+  	console.log('in expand folder for ', folder);
   	folder.expanded = !folder.exapnded;
   	if (folder.childNodes) {
   		//allready loaded it. Set state and get out of dodge
-  		this.setState(this.state);
+		var newState = self.state;
+		newState.cachebuster = new Date();
+		self.setState(newState);
+
   	} else {
   		//ask the server for the kiddies
   		DataApi.getFolders(folder.FullPath).then(function(data) {
   			var newState = self.state;
   			for (var i = 0, len = data.length; i<len; i++ ){
   				var thisFolder = data[i];
-  				newState[thisFolder.FullPath] = thisFolder;
+  				newState.directories[thisFolder.FullPath] = thisFolder;
   			}
 			folder.childNodes = data;
-			folder.expanded = true;
 			self.setState(newState);
   		});
   	}
@@ -110,15 +113,11 @@ var Drive = React.createClass({
 			nodes = this.props.node.RootFolder.childNodes.map(function(node) {
 				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
 			},this);
-		}
-    	var style = {};
-    	if (!this.props.node.RootFolder.exapnded) {
-      		style.display = "none";
-    	}		
+		}	
 		return (
-      		<div>
+      		<div className={this.props.node.RootFolder.expanded ? 'node expanded' : 'node collapsed'}>
         		<h5 onClick={this.handleExpand}>{this.props.node.VolumeLabel} ({this.props.node.Name})</h5>
-        		<ul style={style}>
+        		<ul>
           			{nodes}
        			</ul>
       		</div>
@@ -135,18 +134,14 @@ var TreeNode = React.createClass({
 	render: function() {
 		var nodes;
 		if (this.props.node.childNodes) {
-			nodes = this.props.childNodes.map(function(node) {
+			nodes = this.props.node.childNodes.map(function(node) {
 				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
 			},this);
-		}
-    	var style = {};
-    	if (!this.props.node.exapnded) {
-      		style.display = "none";
-    	}		
+		}		
 		return (
-      		<div>
+      		<div className={this.props.node.expanded ? 'node expanded' : 'node collapsed'}>
         		<h5 onClick={this.handleExpand} title={this.props.node.FullPath}>{this.props.node.Name}</h5>
-        		<ul style={style}>
+        		<ul>
           			{nodes}
        			</ul>
       		</div>
