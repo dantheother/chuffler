@@ -110,6 +110,44 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Web\font-awesome-4.0.3\fonts\fontawesome-webfont.eot">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Web\font-awesome-4.0.3\fonts\fontawesome-webfont.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Web\font-awesome-4.0.3\fonts\fontawesome-webfont.woff">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Web\font-awesome-4.0.3\fonts\FontAwesome.otf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Web\font-awesome-4.0.3\less\bordered-pulled.less" />
+    <None Include="Web\font-awesome-4.0.3\less\core.less" />
+    <None Include="Web\font-awesome-4.0.3\less\fixed-width.less" />
+    <None Include="Web\font-awesome-4.0.3\less\font-awesome.less" />
+    <None Include="Web\font-awesome-4.0.3\less\icons.less" />
+    <None Include="Web\font-awesome-4.0.3\less\larger.less" />
+    <None Include="Web\font-awesome-4.0.3\less\list.less" />
+    <None Include="Web\font-awesome-4.0.3\less\mixins.less" />
+    <None Include="Web\font-awesome-4.0.3\less\path.less" />
+    <None Include="Web\font-awesome-4.0.3\less\rotated-flipped.less" />
+    <None Include="Web\font-awesome-4.0.3\less\spinning.less" />
+    <None Include="Web\font-awesome-4.0.3\less\stacked.less" />
+    <None Include="Web\font-awesome-4.0.3\less\variables.less" />
+    <None Include="Web\font-awesome-4.0.3\scss\font-awesome.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_bordered-pulled.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_core.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_fixed-width.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_icons.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_larger.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_list.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_mixins.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_path.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_rotated-flipped.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_spinning.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_stacked.scss" />
+    <None Include="Web\font-awesome-4.0.3\scss\_variables.scss" />
     <None Include="Web\main.less" />
     <None Include="Web\Scripts\src\index.jsx" />
     <None Include="Web\Scripts\jquery-2.0.3.min.map">
@@ -117,6 +155,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Web\font-awesome-4.0.3\css\font-awesome.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\font-awesome-4.0.3\css\font-awesome.min.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\font-awesome-4.0.3\fonts\fontawesome-webfont.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\main.css">
       <DependentUpon>main.less</DependentUpon>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

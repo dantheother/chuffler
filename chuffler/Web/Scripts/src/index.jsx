@@ -74,15 +74,21 @@ var Root = React.createClass({
 		self.setState(self.state);
 
   	} else {
-  		//ask the server for the kiddies
-  		DataApi.getFolders(folder.FullPath).then(function(data) {
-  			var newState = self.state;
-  			for (var i = 0, len = data.length; i<len; i++ ){
-  				var thisFolder = data[i];
-  				newState.directories[thisFolder.FullPath] = thisFolder;
-  			}
-			folder.childNodes = data;
-			self.setState(newState);
+  		folder.loading = true;
+
+  		self.setState(self.state, function() {
+
+	  		//ask the server for the kiddies
+	  		DataApi.getFolders(folder.FullPath).then(function(data) {
+	  			var newState = self.state;
+	  			for (var i = 0, len = data.length; i<len; i++ ){
+	  				var thisFolder = data[i];
+	  				newState.directories[thisFolder.FullPath] = thisFolder;
+	  			}
+				folder.childNodes = data;
+				folder.loading=false;
+				self.setState(newState);
+	  		});
   		});
   	}
   },
@@ -135,10 +141,22 @@ var TreeNode = React.createClass({
 			nodes = this.props.node.childNodes.map(function(node) {
 				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
 			},this);
-		}		
+		}	
+
+		var iconClass = "fa fa-fw ";	
+		if (this.props.node.loading) {
+			iconClass += "fa-spinner fa-spin";
+		} else if (this.props.node.expanded) {
+			iconClass += "fa-chevron-down";
+		} else if (this.props.node.ChildCount) {
+			iconClass += "fa-chevron-right"
+		}
+
 		return (
       		<div className={this.props.node.expanded ? 'node expanded' : 'node collapsed'}>
-        		<h5 onClick={this.handleExpand} title={this.props.node.FullPath}>{this.props.node.Name}</h5>
+        		<h5 className={this.props.node.ChildCount ? 'haschildren' : 'empty'} onClick={this.handleExpand} title={this.props.node.FullPath}>
+        			<i className={iconClass} /> {this.props.node.Name}
+        		</h5>
         		<ul>
           			{nodes}
        			</ul>
