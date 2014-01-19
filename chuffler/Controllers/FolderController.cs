@@ -7,6 +7,7 @@ using System.Web.Http;
 
 namespace chuffler.Controllers
 {
+    [RoutePrefix("api/folder")]
     public class FolderController : ApiController
     {
         public IEnumerable< Models.Folder > Get(string path)
@@ -23,6 +24,21 @@ namespace chuffler.Controllers
                 }
             );
 
+        }
+
+        [Route("single")]
+        [HttpGet()]
+        public Models.Folder Single(string path)
+        {
+            var di = new System.IO.DirectoryInfo(path);
+            return new Models.Folder
+                {
+                    FullPath = di.FullName
+                    ,
+                    Name = di.Name
+                    ,
+                    ChildCount = TryGetChildCount(di.FullName)
+                };
         }
 
         private int TryGetChildCount(string path)

@@ -44,12 +44,18 @@ var DataApi = {
 		return new xhr({
 			url:'api/folder?path='+path
 		})
+	},
+	getSingleFolder: function(path) {
+		return new xhr({
+			url:'api/folder/single?path='+path
+		})
 	}
 };
 
 var Root = React.createClass({displayName: 'Root',
 	getInitialState: function() {
 		var self = this;
+
 		DataApi.getDrives().then( function(data) {
 			var newState = self.state;
 			for (var i = 0, len = data.length; i<len; i++) {
@@ -60,9 +66,25 @@ var Root = React.createClass({displayName: 'Root',
 			}
 		});
 
+		var savedState = localStorage.getItem('savedState') || JSON.stringify( {favourites : ['E:\\', 'C:\\Users']} );
+
+		if (savedState) {
+			savedState = JSON.parse(savedState);
+			if (savedState && savedState.favourites) {
+				for (var i = 0, len = savedState.favourites.length; i<len; i++) {
+					DataApi.getSingleFolder(savedState.favourites[i]).then( function(data) {
+						var newState = self.state
+						newState.favourites.push(data);
+						self.setState(this);
+					})
+				}
+			}
+		}
+
 		return {
 			drives: [],
-			directories: {}
+			directories: {},
+			favourites: []
 		};
 	},
   expandDirectory: function(folder) {
@@ -92,17 +114,19 @@ var Root = React.createClass({displayName: 'Root',
   		});
   	}
   },
+  toggleFavourite: function(folder) {
+  	var self = this;
+  },
   render: function() {
   	var drives = this.state.drives.map(function(drive){
-  		return Drive( {node:drive, expandDirectory:this.expandDirectory} )
+  		return Drive( {node:drive, expandDirectory:this.expandDirectory} );
   	},this);
 
-  	var drives2 = this.state.drives.map(function(drive){
-  		return Drive( {node:drive, expandDirectory:this.expandDirectory} )
-  	},this);
-  	var drives3 = this.state.drives.map(function(drive){
-  		return Drive( {node:drive, expandDirectory:this.expandDirectory} )
-  	},this);
+  	var faves = this.state.favourites.map(function(fave) {
+  		return React.DOM.div( {className:"folder-group"}, 
+  		 			TreeNode( {node:fave, expandDirectory:this.expandDirectory} )
+	    		);
+  	},this)
 
     return (
     	React.DOM.div(null, 
@@ -111,12 +135,7 @@ var Root = React.createClass({displayName: 'Root',
 	    		React.DOM.div( {className:"folder-group"}, 
 	    			drives
 	    		),
-	    		React.DOM.div( {className:"folder-group"}, 
-	    			drives2
-	    		),
-	    		React.DOM.div( {className:"folder-group"}, 
-	    			drives3
-	    		)	    			    		
+	    		faves    		
 			)
 		)
     );

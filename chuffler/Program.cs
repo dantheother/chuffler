@@ -84,6 +84,7 @@ namespace chuffler
         {
             // Configure WebApi
             var config = new HttpConfiguration();
+            config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute(
              "API Default", "api/{controller}/{id}", new { id = RouteParameter.Optional });
             app.UseWebApi(config);
