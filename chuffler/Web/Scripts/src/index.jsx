@@ -118,9 +118,20 @@ var Drive = React.createClass({
 				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
 			},this);
 		}	
+		var iconClass = "fa fa-fw ";	
+		if (this.props.node.RootFolder.loading) {
+			iconClass += "fa-spinner fa-spin";
+		} else if (this.props.node.RootFolder.expanded) {
+			iconClass += "fa-chevron-down";
+		} else if (this.props.node.RootFolder.ChildCount) {
+			iconClass += "fa-chevron-right"
+		}
+
 		return (
       		<div className={this.props.node.RootFolder.expanded ? 'node expanded' : 'node collapsed'}>
-        		<h5 onClick={this.handleExpand}>{this.props.node.VolumeLabel} ({this.props.node.Name})</h5>
+        		<h5 onClick={this.handleExpand}>
+        			<i className={iconClass} /> {this.props.node.VolumeLabel} ({this.props.node.Name})
+    			</h5>
         		<ul>
           			{nodes}
        			</ul>
@@ -154,7 +165,7 @@ var TreeNode = React.createClass({
 
 		return (
       		<div className={this.props.node.expanded ? 'node expanded' : 'node collapsed'}>
-        		<h5 className={this.props.node.ChildCount ? 'haschildren' : 'empty'} onClick={this.handleExpand} title={this.props.node.FullPath}>
+        		<h5 onClick={this.handleExpand} title={this.props.node.FullPath}>
         			<i className={iconClass} /> {this.props.node.Name}
         		</h5>
         		<ul>
