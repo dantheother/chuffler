@@ -97,10 +97,28 @@ var Root = React.createClass({displayName: 'Root',
   		return Drive( {node:drive, expandDirectory:this.expandDirectory} )
   	},this);
 
+  	var drives2 = this.state.drives.map(function(drive){
+  		return Drive( {node:drive, expandDirectory:this.expandDirectory} )
+  	},this);
+  	var drives3 = this.state.drives.map(function(drive){
+  		return Drive( {node:drive, expandDirectory:this.expandDirectory} )
+  	},this);
+
     return (
     	React.DOM.div(null, 
-    		drives
-    	)
+    		React.DOM.div( {className:"toolbar"}),
+	    	React.DOM.div( {className:"container-folders"}, 
+	    		React.DOM.div( {className:"folder-group"}, 
+	    			drives
+	    		),
+	    		React.DOM.div( {className:"folder-group"}, 
+	    			drives2
+	    		),
+	    		React.DOM.div( {className:"folder-group"}, 
+	    			drives3
+	    		)	    			    		
+			)
+		)
     );
   }
 });

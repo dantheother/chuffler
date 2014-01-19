@@ -155,6 +155,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Web\chuffler.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Web\favico.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Web\font-awesome-4.0.3\css\font-awesome.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
