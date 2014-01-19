@@ -1,3 +1,15 @@
+body {
+  font-family: sans-serif;
+}
 .node.collapsed ul {
   display: none;
+}
+.node ul {
+  margin: 0;
+  padding: 0;
+}
+.node ul li {
+  margin: 0;
+  list-style: none;
+  padding: 0 0 0 10px;
 }

@@ -20,7 +20,7 @@ function xhr(options) {
       deferred.reject(new Error('Server responded with a status of ' + req.status));
     } else {
     	var rawText = req.responseText;
-    	console.log(rawText);
+
     	if (rawText) {
 			deferred.resolve(JSON.parse(rawText));
     	} else {
@@ -67,13 +67,11 @@ var Root = React.createClass({
 	},
   expandDirectory: function(folder) {
   	var self = this;
-  	console.log('in expand folder for ', folder);
-  	folder.expanded = !folder.exapnded;
-  	if (folder.childNodes) {
-  		//allready loaded it. Set state and get out of dodge
-		var newState = self.state;
-		newState.cachebuster = new Date();
-		self.setState(newState);
+  	folder.expanded = !folder.expanded;
+
+  	if (folder.childNodes && folder.childNodes.length) {
+  		//allready loaded it. Set state and get out of dodge   
+		self.setState(self.state);
 
   	} else {
   		//ask the server for the kiddies
