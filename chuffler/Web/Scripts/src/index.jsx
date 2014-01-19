@@ -62,29 +62,46 @@ var Root = React.createClass({
 				var drive = data[i];
 				newState.drives.push(drive);
 				newState.directories[drive.RootFolder.FullPath] = drive.RootFolder;
-				self.setState(this);
 			}
+			self.setState(newState);
 		});
 
 		var savedState = localStorage.getItem('savedState') || JSON.stringify( {favourites : ['E:\\', 'C:\\Users']} );
 
+		var favourites = [];
+
 		if (savedState) {
 			savedState = JSON.parse(savedState);
 			if (savedState && savedState.favourites) {
-				for (var i = 0, len = savedState.favourites.length; i<len; i++) {
-					DataApi.getSingleFolder(savedState.favourites[i]).then( function(data) {
+				favourites = savedState.favourites.map(function(fave) {
+					return {
+						FullPath:fave,
+						Name: fave,
+						loading: true
+					};
+				});
+
+				//have to have this out in a funny function instead of in line in a loop
+				//so that we get proper closure action happening
+				var loadOneFave = function(fave) {
+					DataApi.getSingleFolder(fave.FullPath).then( function(data) {
 						var newState = self.state
-						newState.favourites.push(data);
-						self.setState(this);
-					})
+						fave.Name = data.Name;
+						fave.ChildCount = data.ChildCount;
+						fave.loading = false;
+						self.setState(newState);
+					})					
 				}
+
+				favourites.forEach(loadOneFave);
+
 			}
 		}
 
 		return {
 			drives: [],
 			directories: {},
-			favourites: []
+			favourites: favourites
 		};
 	},
   expandDirectory: function(folder) {
