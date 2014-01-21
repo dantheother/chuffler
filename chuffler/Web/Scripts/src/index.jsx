@@ -56,36 +56,39 @@ var Root = React.createClass({
 	getInitialState: function() {
 		var self = this;
 
+		var newState = {
+			drives: [],
+			directories: {},
+			favourites: []
+		};
+
 		DataApi.getDrives().then( function(data) {
-			var newState = self.state;
 			for (var i = 0, len = data.length; i<len; i++) {
 				var drive = data[i];
 				newState.drives.push(drive);
 				newState.directories[drive.RootFolder.FullPath] = drive.RootFolder;
 			}
-			self.setState(newState);
 		});
 
-		var savedState = localStorage.getItem('savedState') || JSON.stringify( {favourites : ['E:\\', 'C:\\Users']} );
+		var savedState = localStorage.getItem('savedState') ;
 
-		var favourites = [];
+		console.log('savedState is a thing',savedState);
 
 		if (savedState) {
-			savedState = JSON.parse(savedState);
+			console.log('savedState',savedState);
+			if (typeof savedState === 'string') {
+				console.log('unparsing savedState');
+				savedState = JSON.parse(savedState);
+			}
+			console.log('done with savedState, should be an object now', savedState);
 			if (savedState && savedState.favourites) {
-				favourites = savedState.favourites.map(function(fave) {
-					return {
-						FullPath:fave,
-						Name: fave,
-						loading: true
-					};
-				});
+				newState.favourites = savedState.favourites;
+				console.log('have set new state favourites', newState);
 
 				//have to have this out in a funny function instead of in line in a loop
 				//so that we get proper closure action happening
 				var loadOneFave = function(fave) {
 					DataApi.getSingleFolder(fave.FullPath).then( function(data) {
-						var newState = self.state
 						fave.Name = data.Name;
 						fave.ChildCount = data.ChildCount;
 						fave.loading = false;
@@ -93,17 +96,51 @@ var Root = React.createClass({
 					})					
 				}
 
-				favourites.forEach(loadOneFave);
+				console.log('about to foreach through this bitch', newState);
+
+				newState.favourites.forEach(loadOneFave); //f
 
 			}
 		}
 
-		return {
-			drives: [],
-			directories: {},
-			favourites: favourites
-		};
+		return newState;
 	},
+	toggleFavourite: function(folder) {
+  		var self = this;
+  		console.log('should be toggling fave for ', folder);
+  		//TODO prevent double faving
+  		var newState = self.state;
+  		var theState = localStorage.getItem('savedState');
+  		if (theState) {
+  			theState = JSON.parse(theState);
+
+	  		if (theState.favourites) {
+	  			var foundIt = -42;
+  				for(var i = 0, len = theState.favourites.length; i<len; i++) {
+  					var thisFav = theState.favourites[i];
+  					if (thisFav.FullPath ==  folder.FullPath) {
+  						foundIt = i;
+  						break;
+  					}
+  				}	
+  				if (foundIt == -42) {
+  					//didn't found it. Add it
+  					theState.favourites.push(folder);
+  				} else {
+  					//found it. Remove it
+  					favourites.splice(i,1);
+  				}
+	  		}
+	  	}
+  		if (!theState || !theState.favourites){
+  			theState = {favourites: [folder]};
+  		}
+
+		localStorage.setItem("savedState", JSON.stringify(theState));
+		self.setState({favourites:theState.favourites});
+		self.setState(newState);
+
+  },
   expandDirectory: function(folder) {
   	var self = this;
   	folder.expanded = !folder.expanded;
@@ -131,17 +168,14 @@ var Root = React.createClass({
   		});
   	}
   },
-  toggleFavourite: function(folder) {
-  	var self = this;
-  },
   render: function() {
   	var drives = this.state.drives.map(function(drive){
-  		return <Drive node={drive} expandDirectory={this.expandDirectory} />;
+  		return <Drive node={drive} expandDirectory={this.expandDirectory} onToggleFavourite={this.toggleFavourite} />;
   	},this);
 
   	var faves = this.state.favourites.map(function(fave) {
   		return <div className="folder-group">
-  		 			<TreeNode node={fave} expandDirectory={this.expandDirectory} />
+  		 			<TreeNode node={fave} expandDirectory={this.expandDirectory} onToggleFavourite={this.toggleFavourite} />
 	    		</div>;
   	},this)
 
@@ -169,7 +203,7 @@ var Drive = React.createClass({
 		var nodes;
 		if (this.props.node.RootFolder && this.props.node.RootFolder.childNodes) {
 			nodes = this.props.node.RootFolder.childNodes.map(function(node) {
-				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
+				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} /></li>
 			},this);
 		}	
 		var iconClass = "fa fa-fw ";	
@@ -200,11 +234,14 @@ var TreeNode = React.createClass({
 
 		this.props.expandDirectory(this.props.node);
 	},
+	handleFaveClick: function() {
+		this.props.onToggleFavourite(this.props.node);
+	},
 	render: function() {
 		var nodes;
 		if (this.props.node.childNodes) {
 			nodes = this.props.node.childNodes.map(function(node) {
-				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} /></li>
+				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} /></li>
 			},this);
 		}	
 
@@ -220,7 +257,7 @@ var TreeNode = React.createClass({
 		return (
       		<div className={this.props.node.expanded ? 'node expanded' : 'node collapsed'}>
         		<h5 onClick={this.handleExpand} title={this.props.node.FullPath}>
-        			<i className={iconClass} /> {this.props.node.Name}
+        			<i className={iconClass} /> {this.props.node.Name} <i className="fa fa-heart" onClick={this.handleFaveClick} />
         		</h5>
         		<ul>
           			{nodes}
