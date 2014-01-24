@@ -73,5 +73,21 @@
     }
 
     h5 {
+        margin:0;
+        padding:5px;
+
+        .toggle-fave {
+            cursor:pointer;
+            display:none;
+            float:right;
+        }
+
+        &:hover {
+            background-color:#eee;
+
+            .toggle-fave {
+                display:inline-block;
+            }
+        }
     }
 }

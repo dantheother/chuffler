@@ -61,3 +61,18 @@ html {
   list-style: none;
   padding: 0 0 0 10px;
 }
+.node h5 {
+  margin: 0;
+  padding: 5px;
+}
+.node h5 .toggle-fave {
+  cursor: pointer;
+  display: none;
+  float: right;
+}
+.node h5:hover {
+  background-color: #eee;
+}
+.node h5:hover .toggle-fave {
+  display: inline-block;
+}

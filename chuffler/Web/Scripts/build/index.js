@@ -102,6 +102,11 @@ var Root = React.createClass({displayName: 'Root',
 					fave.ChildCount = data.ChildCount;
 					fave.loading = false;
 					self.setState(newState);
+					//TODO load the kiddies first as well? Or should the server return the kiddies?
+					//I'm thinking no, add it, then load the kiddies, makes for a better UI
+					//I'm also thinking this is a crapton of async work, look at how we can use q to queue up operations to do one by one
+					//load drives, then load each single fave folder, then load kiddies for each single fave folder
+					//one smooth run through
 				});
 			};
 
@@ -132,8 +137,9 @@ var Root = React.createClass({displayName: 'Root',
   					}
   				}	
   				if (foundIt == -1) {
-  					//didn't found it. Add it
-  					theState.favourites.push(folder);
+  					//didn't found it. Add a copy of it
+  					//TODO use some extend library for this
+  					theState.favourites.push({FullPath: folder.FullPath, Name:folder.Name, ChildCount: folder.ChildCount, loading:false, expanded:false});
   				} else {
   					//found it. Remove it
   					theState.favourites.splice(i,1);
@@ -267,7 +273,7 @@ var TreeNode = React.createClass({displayName: 'TreeNode',
 		return (
       		React.DOM.div( {className:this.props.node.expanded ? 'node expanded' : 'node collapsed'}, 
         		React.DOM.h5( {onClick:this.handleExpand, title:this.props.node.FullPath}, 
-        			React.DOM.i( {className:iconClass} ), this.props.node.Name, React.DOM.i( {className:"fa fa-heart", onClick:this.handleFaveClick} )
+        			React.DOM.i( {className:iconClass} ), this.props.node.Name, React.DOM.i( {className:"fa fa-heart toggle-fave", onClick:this.handleFaveClick} )
         		),
         		React.DOM.ul(null, 
           			nodes
