@@ -183,9 +183,6 @@ var Root = React.createClass({displayName: 'Root',
   	}
   },
   render: function() {
-  	var drives = this.state.drives.map(function(drive){
-  		return Drive( {node:drive, expandDirectory:this.expandDirectory, onToggleFavourite:this.toggleFavourite} );
-  	},this);
 
   	var faves = this.state.favourites.map(function(fave) {
   		return React.DOM.div( {className:"folder-group"}, 
@@ -197,14 +194,26 @@ var Root = React.createClass({displayName: 'Root',
     	React.DOM.div(null, 
     		React.DOM.div( {className:"toolbar"}),
 	    	React.DOM.div( {className:"container-folders"}, 
-	    		React.DOM.div( {className:"folder-group"}, 
-	    			drives
-	    		),
+	    		Drives( {drives:this.state.drives, expandDirectory:this.expandDirectory, onToggleFavourite:this.toggleFavourite} ),
 	    		faves    		
 			)
 		)
     );
   }
+});
+
+var Drives = React.createClass({displayName: 'Drives',
+	render: function() {
+	  	var drives = this.props.drives.map(function(drive){
+	  		return Drive( {node:drive, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite} );
+	  	},this);
+
+		return (
+    		React.DOM.div( {className:"folder-group"}, 
+    			drives
+    		)			
+		);
+	}
 });
 
 var Drive = React.createClass({displayName: 'Drive',
