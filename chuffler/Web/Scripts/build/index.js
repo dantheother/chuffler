@@ -62,18 +62,8 @@ var Root = React.createClass({displayName: 'Root',
 			favourites: []
 		};
 
-		DataApi.getDrives().then( function(data) {
-			for (var i = 0, len = data.length; i<len; i++) {
-				var drive = data[i];
-				newState.drives.push(drive);
-				newState.directories[drive.RootFolder.FullPath] = drive.RootFolder;
-			}
-		});
-
 		var savedState = localStorage.getItem('savedState') ;
-
 		console.log('savedState is a thing',savedState);
-
 		if (savedState) {
 			console.log('savedState',savedState);
 			if (typeof savedState === 'string') {
@@ -85,37 +75,55 @@ var Root = React.createClass({displayName: 'Root',
 				newState.favourites = savedState.favourites;
 				console.log('have set new state favourites', newState);
 
-				//have to have this out in a funny function instead of in line in a loop
-				//so that we get proper closure action happening
-				var loadOneFave = function(fave) {
-					DataApi.getSingleFolder(fave.FullPath).then( function(data) {
-						fave.Name = data.Name;
-						fave.ChildCount = data.ChildCount;
-						fave.loading = false;
-						self.setState(newState);
-					})					
-				}
-
-				console.log('about to foreach through this bitch', newState);
-
-				newState.favourites.forEach(loadOneFave); //f
-
 			}
 		}
+
+		//first up, load the drives
+		DataApi.getDrives()
+		.then( function(data) {
+			for (var i = 0, len = data.length; i<len; i++) {
+				var drive = data[i];
+				newState.drives.push(drive);
+				newState.directories[drive.RootFolder.FullPath] = drive.RootFolder;
+			}
+			var deferred = Q.defer();
+			self.setState(newState, function() {
+				deferred.resolve();
+			})
+			return deferred.promise;
+		})
+		//once the drives are loaded and tucked away in state, get the faves
+		.then(function() {
+			//have to have this out in a funny function instead of in line in a loop
+			//so that we get proper closure action happening
+			var loadOneFave = function(fave) {
+				DataApi.getSingleFolder(fave.FullPath).then( function(data) {
+					fave.Name = data.Name;
+					fave.ChildCount = data.ChildCount;
+					fave.loading = false;
+					self.setState(newState);
+				});
+			};
+
+			console.log('about to foreach through this bitch', newState);
+
+			newState.favourites.forEach(loadOneFave); //f
+
+		});
 
 		return newState;
 	},
 	toggleFavourite: function(folder) {
   		var self = this;
   		console.log('should be toggling fave for ', folder);
-  		//TODO prevent double faving
+
   		var newState = self.state;
   		var theState = localStorage.getItem('savedState');
   		if (theState) {
   			theState = JSON.parse(theState);
 
 	  		if (theState.favourites) {
-	  			var foundIt = -42;
+	  			var foundIt = -1;
   				for(var i = 0, len = theState.favourites.length; i<len; i++) {
   					var thisFav = theState.favourites[i];
   					if (thisFav.FullPath ==  folder.FullPath) {
@@ -123,12 +131,12 @@ var Root = React.createClass({displayName: 'Root',
   						break;
   					}
   				}	
-  				if (foundIt == -42) {
+  				if (foundIt == -1) {
   					//didn't found it. Add it
   					theState.favourites.push(folder);
   				} else {
   					//found it. Remove it
-  					favourites.splice(i,1);
+  					theState.favourites.splice(i,1);
   				}
 	  		}
 	  	}
@@ -137,7 +145,7 @@ var Root = React.createClass({displayName: 'Root',
   		}
 
 		localStorage.setItem("savedState", JSON.stringify(theState));
-		self.setState({favourites:theState.favourites});
+		newState.favourites = theState.favourites;
 		self.setState(newState);
 
   },
@@ -234,7 +242,9 @@ var TreeNode = React.createClass({displayName: 'TreeNode',
 
 		this.props.expandDirectory(this.props.node);
 	},
-	handleFaveClick: function() {
+	handleFaveClick: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
 		this.props.onToggleFavourite(this.props.node);
 	},
 	render: function() {
