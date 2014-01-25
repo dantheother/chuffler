@@ -182,11 +182,18 @@ var Root = React.createClass({
   		});
   	}
   },
+  refreshDirectory: function(folder) {
+  	var self = this;
+  	//this is a hack. toggle the expanded, nuke the child nodes, then expand it
+  	folder.expanded = !folder.expanded;
+  	folder.childNodes = [];
+  	this.expandDirectory(folder);
+  },
   render: function() {
 
   	var faves = this.state.favourites.map(function(fave) {
   		return <div className="folder-group">
-  		 			<TreeNode node={fave} expandDirectory={this.expandDirectory} onToggleFavourite={this.toggleFavourite} />
+  		 			<TreeNode node={fave} expandDirectory={this.expandDirectory} onToggleFavourite={this.toggleFavourite} refreshDirectory={this.refreshDirectory} />
 	    		</div>;
   	},this)
 
@@ -194,7 +201,7 @@ var Root = React.createClass({
     	<div>
     		<div className="toolbar"></div>
 	    	<div className="container-folders">
-	    		<Drives drives={this.state.drives} expandDirectory={this.expandDirectory} onToggleFavourite={this.toggleFavourite} />
+	    		<Drives drives={this.state.drives} expandDirectory={this.expandDirectory} onToggleFavourite={this.toggleFavourite} refreshDirectory={this.refreshDirectory} />
 	    		{faves}    		
 			</div>
 		</div>
@@ -205,7 +212,7 @@ var Root = React.createClass({
 var Drives = React.createClass({
 	render: function() {
 	  	var drives = this.props.drives.map(function(drive){
-	  		return <Drive node={drive} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} />;
+	  		return <Drive node={drive} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} refreshDirectory={this.props.refreshDirectory} />;
 	  	},this);
 
 		return (
@@ -222,11 +229,16 @@ var Drive = React.createClass({
 
 		this.props.expandDirectory(this.props.node.RootFolder);
 	},
+	handleRefresh: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.refreshDirectory(this.props.node.RootFolder);
+	},
 	render: function() {
 		var nodes;
 		if (this.props.node.RootFolder && this.props.node.RootFolder.childNodes) {
 			nodes = this.props.node.RootFolder.childNodes.map(function(node) {
-				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} /></li>
+				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} refreshDirectory={this.props.refreshDirectory} /></li>
 			},this);
 		}	
 		var iconClass = "fa fa-fw ";	
@@ -241,7 +253,7 @@ var Drive = React.createClass({
 		return (
       		<div className={this.props.node.RootFolder.expanded ? 'node expanded' : 'node collapsed'}>
         		<h5 onClick={this.handleExpand}>
-        			<i className={iconClass} /> {this.props.node.VolumeLabel} ({this.props.node.Name})
+        			<i className={iconClass} /> {this.props.node.VolumeLabel} ({this.props.node.Name}) <i className="fa fa-refresh action" onClick={this.handleRefresh} />
     			</h5>
         		<ul>
           			{nodes}
@@ -262,11 +274,16 @@ var TreeNode = React.createClass({
 		e.stopPropagation();
 		this.props.onToggleFavourite(this.props.node);
 	},
+	handleRefresh: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.refreshDirectory(this.props.node);
+	},	
 	render: function() {
 		var nodes;
 		if (this.props.node.childNodes) {
 			nodes = this.props.node.childNodes.map(function(node) {
-				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} /></li>
+				return <li><TreeNode node={node} expandDirectory={this.props.expandDirectory} onToggleFavourite={this.props.onToggleFavourite} refreshDirectory={this.props.refreshDirectory} /></li>
 			},this);
 		}	
 
@@ -282,7 +299,7 @@ var TreeNode = React.createClass({
 		return (
       		<div className={this.props.node.expanded ? 'node expanded' : 'node collapsed'}>
         		<h5 onClick={this.handleExpand} title={this.props.node.FullPath}>
-        			<i className={iconClass} /> {this.props.node.Name} <i className="fa fa-heart toggle-fave" onClick={this.handleFaveClick} />
+        			<i className={iconClass} /> {this.props.node.Name} <i className="fa fa-heart action" onClick={this.handleFaveClick} /> <i className="fa fa-refresh action" onClick={this.handleRefresh} />
         		</h5>
         		<ul>
           			{nodes}

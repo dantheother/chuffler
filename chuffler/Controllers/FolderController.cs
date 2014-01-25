@@ -41,6 +41,7 @@ namespace chuffler.Controllers
                 };
         }
 
+
         private int TryGetChildCount(string path)
         {
             try

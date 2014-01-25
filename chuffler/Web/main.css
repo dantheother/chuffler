@@ -65,14 +65,15 @@ html {
   margin: 0;
   padding: 5px;
 }
-.node h5 .toggle-fave {
+.node h5 i.action {
   cursor: pointer;
   display: none;
   float: right;
+  margin-left: 5px;
 }
 .node h5:hover {
   background-color: #eee;
 }
-.node h5:hover .toggle-fave {
+.node h5:hover .action {
   display: inline-block;
 }

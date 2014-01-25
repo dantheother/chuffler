@@ -182,11 +182,18 @@ var Root = React.createClass({displayName: 'Root',
   		});
   	}
   },
+  refreshDirectory: function(folder) {
+  	var self = this;
+  	//this is a hack. toggle the expanded, nuke the child nodes, then expand it
+  	folder.expanded = !folder.expanded;
+  	folder.childNodes = [];
+  	this.expandDirectory(folder);
+  },
   render: function() {
 
   	var faves = this.state.favourites.map(function(fave) {
   		return React.DOM.div( {className:"folder-group"}, 
-  		 			TreeNode( {node:fave, expandDirectory:this.expandDirectory, onToggleFavourite:this.toggleFavourite} )
+  		 			TreeNode( {node:fave, expandDirectory:this.expandDirectory, onToggleFavourite:this.toggleFavourite, refreshDirectory:this.refreshDirectory} )
 	    		);
   	},this)
 
@@ -194,7 +201,7 @@ var Root = React.createClass({displayName: 'Root',
     	React.DOM.div(null, 
     		React.DOM.div( {className:"toolbar"}),
 	    	React.DOM.div( {className:"container-folders"}, 
-	    		Drives( {drives:this.state.drives, expandDirectory:this.expandDirectory, onToggleFavourite:this.toggleFavourite} ),
+	    		Drives( {drives:this.state.drives, expandDirectory:this.expandDirectory, onToggleFavourite:this.toggleFavourite, refreshDirectory:this.refreshDirectory} ),
 	    		faves    		
 			)
 		)
@@ -205,7 +212,7 @@ var Root = React.createClass({displayName: 'Root',
 var Drives = React.createClass({displayName: 'Drives',
 	render: function() {
 	  	var drives = this.props.drives.map(function(drive){
-	  		return Drive( {node:drive, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite} );
+	  		return Drive( {node:drive, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite, refreshDirectory:this.props.refreshDirectory} );
 	  	},this);
 
 		return (
@@ -222,11 +229,16 @@ var Drive = React.createClass({displayName: 'Drive',
 
 		this.props.expandDirectory(this.props.node.RootFolder);
 	},
+	handleRefresh: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.refreshDirectory(this.props.node.RootFolder);
+	},
 	render: function() {
 		var nodes;
 		if (this.props.node.RootFolder && this.props.node.RootFolder.childNodes) {
 			nodes = this.props.node.RootFolder.childNodes.map(function(node) {
-				return React.DOM.li(null, TreeNode( {node:node, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite} ))
+				return React.DOM.li(null, TreeNode( {node:node, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite, refreshDirectory:this.props.refreshDirectory} ))
 			},this);
 		}	
 		var iconClass = "fa fa-fw ";	
@@ -241,7 +253,7 @@ var Drive = React.createClass({displayName: 'Drive',
 		return (
       		React.DOM.div( {className:this.props.node.RootFolder.expanded ? 'node expanded' : 'node collapsed'}, 
         		React.DOM.h5( {onClick:this.handleExpand}, 
-        			React.DOM.i( {className:iconClass} ), this.props.node.VolumeLabel, " (",this.props.node.Name,") "
+        			React.DOM.i( {className:iconClass} ), this.props.node.VolumeLabel, " (",this.props.node.Name,") ", React.DOM.i( {className:"fa fa-refresh action", onClick:this.handleRefresh} )
     			),
         		React.DOM.ul(null, 
           			nodes
@@ -262,11 +274,16 @@ var TreeNode = React.createClass({displayName: 'TreeNode',
 		e.stopPropagation();
 		this.props.onToggleFavourite(this.props.node);
 	},
+	handleRefresh: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.refreshDirectory(this.props.node);
+	},	
 	render: function() {
 		var nodes;
 		if (this.props.node.childNodes) {
 			nodes = this.props.node.childNodes.map(function(node) {
-				return React.DOM.li(null, TreeNode( {node:node, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite} ))
+				return React.DOM.li(null, TreeNode( {node:node, expandDirectory:this.props.expandDirectory, onToggleFavourite:this.props.onToggleFavourite, refreshDirectory:this.props.refreshDirectory} ))
 			},this);
 		}	
 
@@ -282,7 +299,7 @@ var TreeNode = React.createClass({displayName: 'TreeNode',
 		return (
       		React.DOM.div( {className:this.props.node.expanded ? 'node expanded' : 'node collapsed'}, 
         		React.DOM.h5( {onClick:this.handleExpand, title:this.props.node.FullPath}, 
-        			React.DOM.i( {className:iconClass} ), this.props.node.Name, React.DOM.i( {className:"fa fa-heart toggle-fave", onClick:this.handleFaveClick} )
+        			React.DOM.i( {className:iconClass} ), this.props.node.Name, React.DOM.i( {className:"fa fa-heart action", onClick:this.handleFaveClick} ), React.DOM.i( {className:"fa fa-refresh action", onClick:this.handleRefresh} )
         		),
         		React.DOM.ul(null, 
           			nodes
