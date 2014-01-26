@@ -34,6 +34,32 @@ namespace chuffler.Code
                 {
                     clients.Value.All.jobStarting();
                     //do the boogaloo with it, probably passing the guid so it can come out from the progress and completed
+                    try
+                    {
+
+                    }
+                    catch (System.ComponentModel.Win32Exception ex)
+                    {
+                        clients.Value.All.error(new
+                        {
+                            Message = ex.Message,
+                            Number = ex.ErrorCode,
+                            NativeErrorCode = ex.NativeErrorCode,
+                            Type = ex.GetType().FullName,
+                            StackTrace = ex.StackTrace
+                        }
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        clients.Value.All.error(new
+                        {
+                            Message = ex.Message,
+                            Type = ex.GetType().FullName,
+                            StackTrace = ex.StackTrace
+                        }
+                        );
+                    }
                 }
                 //this will only get to here once we've said to cancel, that the queue will have no more items on it
 
