@@ -37,8 +37,30 @@ Zero friction parallel self hosting of ASP.NET Web API and static files using OW
 Alexander Zeitler 
 (slightly out of date)
 http://blog.alexonasp.net/post/2013/04/27/Zero-friction-parallel-self-hosting-of-ASPNET-Web-API-and-static-files-using-OWIN-and-Katana.aspx
-                 
+          
+/* Resources that helped with the copy/move file with progress */	
+
+Can I show file copy progress using FileInfo.CopyTo() in .NET?
+Answer by Dennis from StackOverflow
+http://stackoverflow.com/a/8341945/11569
+
+CopyFileEx (kernel32)
+pinvoke.net
+http://www.pinvoke.net/default.aspx/kernel32.CopyFileEx
+	  
+MoveFileWithProgress function
+MSDN 
+http://msdn.microsoft.com/en-us/library/windows/desktop/aa365242(v=vs.85).aspx
+
+CopyFileEx function
+MSDN	
+http://msdn.microsoft.com/en-us/library/windows/desktop/aa363852.aspx
+		         
+BlockingCollection and IProducerConsumerCollection
+Justin Etheredge
+http://www.codethinked.com/blockingcollection-and-iproducerconsumercollection
+
 /* SITE */
 Last update: A long time ago
 Standards: HTML5, CSS3
-Components: jQuery, SignalR, ReactJS, Owin, Asp.net webapi, Topshelf
+Components: jQuery, SignalR, ReactJS, Owin, Asp.net webapi, Topshelf, fontawesome, q.js

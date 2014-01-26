@@ -34,17 +34,6 @@ namespace chuffler
         }
     }
 
-    public class TownCrier
-    {
-        readonly System.Timers.Timer _timer;
-        public TownCrier()
-        {
-            _timer = new System.Timers.Timer(1000) { AutoReset = true };
-            _timer.Elapsed += (sender, eventArgs) => Console.WriteLine("It is {0} an all is well", DateTime.Now);
-        }
-        public void Start() { _timer.Start(); }
-        public void Stop() { _timer.Stop(); }
-    }
 
     public class ChufflerStarter
     {
@@ -71,6 +60,7 @@ namespace chuffler
         }
         public void Stop()
         {
+            Code.CopyQueue.Stop();
             lock (monitor)
             {
                 Monitor.Pulse(monitor);

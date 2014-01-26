@@ -99,9 +99,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Code\CopyQueue.cs" />
+    <Compile Include="Code\XCopy.cs" />
     <Compile Include="Controllers\DriveController.cs" />
     <Compile Include="Controllers\FolderController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Hubs\FileCopy.cs" />
     <Compile Include="Models\Drive.cs" />
     <Compile Include="Models\Folder.cs" />
     <Compile Include="Program.cs" />
